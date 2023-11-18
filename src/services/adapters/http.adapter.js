@@ -14,24 +14,34 @@ class HttpAdapter {
         'Content-type': 'application/json'
       }
     })
-
     http.interceptors.request.use(
-      request => {
+      (request) => {
+        const token = localStorage.getItem('token');
+    
         if (
           typeof request.hideLoading === 'undefined' ||
           !request.hideLoading
         ) {
-          this.progressbar.start()
+          this.progressbar.start();
         }
-        return request
-      },
-      error => {
-        this.progressbar.finish()
+    
+        // Add the Authorization header if a token is available
+        if (token) {
+  
 
-        NotificationService.error('Network error. Check your connection')
-        return Promise.reject(error)
+          request.headers['Authorization'] = `Bearer ${token}`;
+        }
+    
+        return request;
+      },
+      (error) => {
+        this.progressbar.finish();
+    
+        NotificationService.error('Network error. Check your connection');
+        // Suppress the error here
+        return Promise.resolve();
       }
-    )
+    );
 
     http.interceptors.response.use(
       response => {
@@ -52,6 +62,7 @@ class HttpAdapter {
       }
     )
 
+    
     return http
   }
 }
