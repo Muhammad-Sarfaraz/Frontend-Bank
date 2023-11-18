@@ -1,5 +1,5 @@
 export default {
     environment: 'local',
-    base_url: 'https://www.endpoint.com',
-    api_url: 'https://www.endpoint.com/api',
+    base_url: 'https://127.0.0.1:8000',
+    api_url: 'https://127.0.0.1:8000/api',
   };

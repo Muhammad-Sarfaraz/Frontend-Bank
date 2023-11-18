@@ -1,65 +1,33 @@
 <template>
   <master>
     <template v-slot:content>
-      <div class="col-3">
-        <section class="about">
-          <div class="intro">
-            <div class="intro-inner">
-              <div class="text">
-                <h1>Aura Vue</h1>
-              </div>
-            </div>
-          </div>
-          <p>Aura Vue, is a boilerplate for Vue js.</p>
-        </section>
-        <a target="_blank" href="https://vuex.vuejs.org/">
-          <section class="project">
-            <div class="project-icon">
-              <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4">
-            </div>
-            <div class="project-description">
-              <h1>VueX</h1>
-              <h2>🎉 Vuex is a state management pattern + library for Vue.js applications. </h2>
-              <p class="p-sm"></p>
-            </div>
-          </section>
-        </a>
-        <a target="_blank" href="https://vue3-toastify.js-bridge.com/">
-          <section class="project">
-            <div class="project-icon">
-              <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4">
-            </div>
-            <div class="project-description">
-              <h1>Vue Toastr</h1>
-              <h2>📝 Allows you to add toast to your app with ease.</h2>
-              <p class="p-sm"></p>
-            </div>
-          </section>
-        </a>
-        <a target="_blank" href="https://github.com/hilongjw/vue-progressbar">
-          <section class="project">
-            <div class="project-icon">
-              <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4">
-            </div>
-            <div class="project-description">
-              <h1>Vue Progressbar</h1>
-              <h2>♻️ A lightweight progress bar for vue.</h2>
-              <p class="p-sm"></p>
-            </div>
-          </section>
-        </a>
-        <a target="_blank" href="https://ankurk91.github.io/vue-loading-overlay/">
-          <section class="project">
-            <div class="project-icon">
-              <img src="https://avatars.githubusercontent.com/u/6128107?s=200&v=4">
-            </div>
-            <div class="project-description">
-              <h1>Vue Loader</h1>
-              <h2>🌀 Vue.js component for full screen loading indicator </h2>
-              <p class="p-sm"></p>
-            </div>
-          </section>
-        </a>
+      <div>
+        <h5>Current Balance : {{balance}}</h5>
+
+      <br />
+      <h4>Transaction List
+      </h4>
+      <table >
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Amount</th>
+                <th>Transaction type</th>
+                <th >Fee</th>
+                <th >Date</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(transaction, index) in transactions" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ transaction.amount }}</td>
+              <td>{{ transaction.transaction_type }}</td>
+              
+              <td>{{ transaction.fee }}</td>
+              <td>{{ transaction.date }}</td>
+          </tr>
+      </tbody>
+    </table>
       </div>
     </template>
   </master>
@@ -68,10 +36,29 @@
 <script>
 
 import master from './layout/master.vue';
+import HttpAdapter from '@/services/adapters/http.adapter';
 
 export default {
   components: {
     master
+  },
+  data(){
+    return {
+      balance : 0,
+      transactions:{}
+    }
+  },
+  computed:{
+    http(){
+      const adapter = new HttpAdapter(this.$Progress);
+      return adapter.http();
+    },
+  },
+  created(){
+    this.http.get('http://127.0.0.1:8000/api/').then((res)=>{
+      this.transactions = res.data.data.transactions;
+      this.balance = res.data.data.balance;
+    })
   }
 }
 

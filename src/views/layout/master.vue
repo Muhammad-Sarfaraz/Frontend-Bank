@@ -5,8 +5,19 @@
           <div class="row">
             <div class="col-1">
               <nav>
+          
                 <RouterLink to="/">Home</RouterLink>
-                <RouterLink to="/about">About</RouterLink>
+                <template v-if="user.id || token"> 
+                  <RouterLink to="/withdrawal">Withdrawal</RouterLink>
+                  <RouterLink to="/deposit">Deposit</RouterLink>
+                  <button @click.prevent="logout()">Logout</button>
+
+                </template>
+                <template v-else>
+                  <RouterLink to="/login">Login</RouterLink>
+                  <RouterLink to="/register">Register</RouterLink>
+                </template>
+               
               </nav>
             </div>
 
@@ -14,11 +25,7 @@
             </slot>
        
             <div class="col-1">
-              <nav class="text-right">
-                <a target="_blank" href="https://github.com/Muhammad-Sarfaraz/AuraVue">
-                  GitHub
-                </a>
-              </nav>
+             
             </div>
           </div>
         </div>
@@ -26,7 +33,7 @@
         <div class="row">
           <div class="col-1">
             <footer>
-              <span>🎉</span>
+              <span>Bank</span>
             </footer>
           </div>
         </div>
@@ -35,8 +42,31 @@
   </template>
   
   <script>
+import { mapState, mapGetters, mapMutations } from 'vuex';
+import HttpAdapter from '@/services/adapters/http.adapter';
 
 export default{
+  computed:{
+    ...mapState('login', ['user','token']),
+    token(){
+      return localStorage.getItem('token')
+    },
+    http() {
+            const adapter = new HttpAdapter(this.$Progress);
+            return adapter.http();
+        },
+  },
+  methods:{
+    logout(){
+      this.http.post('http://127.0.0.1:8000/api/logout', {}).then((res) => {
+      if(res.data){
+        localStorage.removeItem('token');
+        alert(res.data.message);
+        this.$router.push('/login');
 
+      }
+    })
+    }
+  },
 }
 </script>
